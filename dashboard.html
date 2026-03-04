@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LewdCrom — My Commission</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Josefin+Sans:wght@300;400&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --gold:#C9A84C; --gold2:#e8c96a; --dark:#0a0a10; --dark2:#0f0f18; --dark3:#161620; --border:rgba(201,168,76,0.15); --text:#d4cfc8; --muted:rgba(212,207,200,0.45); }
+  body { background:var(--dark); color:var(--text); font-family:'Josefin Sans',sans-serif; min-height:100vh; }
+  body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:0; }
+
+  header { border-bottom:1px solid var(--border); padding:16px 24px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; background:rgba(10,10,16,0.95); backdrop-filter:blur(12px); z-index:100; animation:fadeDown 0.5s ease both; }
+  .logo { font-family:'Cinzel',serif; font-size:16px; letter-spacing:0.3em; color:var(--gold); }
+  .header-right { display:flex; align-items:center; gap:16px; }
+  .handle { font-size:10px; letter-spacing:0.2em; color:var(--muted); }
+  .handle span { color:var(--gold); }
+  .logout-btn { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); cursor:pointer; border:1px solid var(--border); padding:6px 12px; background:none; transition:all 0.2s; }
+  .logout-btn:hover { color:var(--gold); border-color:var(--gold); }
+
+  main { max-width:820px; margin:0 auto; padding:32px 24px; position:relative; z-index:1; }
+
+  .section-label { font-size:9px; letter-spacing:0.35em; text-transform:uppercase; color:var(--gold); margin-bottom:16px; display:flex; align-items:center; gap:12px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .status-badge { display:inline-flex; align-items:center; gap:8px; padding:7px 16px; border:1px solid var(--border); font-size:9px; letter-spacing:0.25em; text-transform:uppercase; margin-bottom:28px; }
+  .sdot { width:6px; height:6px; border-radius:50%; }
+  .s-pending { border-color:rgba(201,168,76,0.3); color:var(--gold); }
+  .s-pending .sdot { background:var(--gold); animation:pulse 2s infinite; }
+  .s-in_progress { border-color:rgba(152,201,163,0.3); color:#98c9a3; }
+  .s-in_progress .sdot { background:#98c9a3; animation:pulse 2s infinite; }
+  .s-completed { border-color:rgba(126,184,247,0.3); color:#7eb8f7; }
+  .s-completed .sdot { background:#7eb8f7; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+  .card { background:var(--dark2); border:1px solid var(--border); padding:28px; margin-bottom:20px; position:relative; animation:fadeUp 0.5s ease both; }
+  .card::before { content:''; position:absolute; top:0;left:0;right:0; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); opacity:0.4; }
+
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media(max-width:580px){ .form-grid{grid-template-columns:1fr;} }
+  .full { grid-column:1/-1; }
+  .form-group { display:flex; flex-direction:column; gap:8px; }
+  label { font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--muted); }
+  input, textarea, select { background:var(--dark3); border:1px solid var(--border); color:var(--text); font-family:'Josefin Sans',sans-serif; font-size:13px; padding:11px 14px; outline:none; transition:border-color 0.2s; resize:vertical; width:100%; }
+  input:focus, textarea:focus, select:focus { border-color:rgba(201,168,76,0.5); }
+  input::placeholder, textarea::placeholder { color:rgba(212,207,200,0.2); }
+  select option { background:var(--dark3); }
+
+  .save-btn { width:100%; padding:13px; background:var(--gold); color:var(--dark); font-family:'Josefin Sans',sans-serif; font-size:10px; letter-spacing:0.3em; text-transform:uppercase; border:none; cursor:pointer; transition:all 0.2s; margin-top:16px; }
+  .save-btn:hover { background:var(--gold2); transform:translateY(-1px); }
+  .save-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+  .refs-list { display:flex; flex-direction:column; gap:8px; }
+  .ref-item { display:flex; align-items:center; gap:10px; background:var(--dark3); border:1px solid var(--border); padding:10px 14px; animation:fadeUp 0.3s ease both; }
+  .ref-type { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); min-width:50px; }
+  .ref-content { flex:1; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ref-del { background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; transition:color 0.2s; padding:0 4px; }
+  .ref-del:hover { color:#E09898; }
+  .add-ref-row { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .add-ref-row select { flex:0 0 100px; }
+  .add-ref-row input { flex:1; min-width:120px; }
+  .add-ref-btn { background:transparent; border:1px solid var(--border); color:var(--gold); font-family:'Josefin Sans',sans-serif; font-size:10px; letter-spacing:0.2em; padding:0 16px; cursor:pointer; white-space:nowrap; transition:all 0.2s; min-height:42px; }
+  .add-ref-btn:hover { border-color:var(--gold); background:rgba(201,168,76,0.08); }
+
+  .chat-box { height:300px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; padding:4px 0 8px; scroll-behavior:smooth; }
+  .chat-box::-webkit-scrollbar { width:3px; }
+  .chat-box::-webkit-scrollbar-thumb { background:var(--border); }
+  .msg { display:flex; flex-direction:column; max-width:78%; }
+  .msg.mine { align-self:flex-end; align-items:flex-end; }
+  .msg.theirs { align-self:flex-start; align-items:flex-start; }
+  .msg-sender { font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); margin-bottom:4px; }
+  .msg-bubble { padding:10px 14px; font-size:13px; line-height:1.5; border:1px solid var(--border); }
+  .msg.mine .msg-bubble { background:rgba(201,168,76,0.08); border-color:rgba(201,168,76,0.2); }
+  .msg.theirs .msg-bubble { background:var(--dark3); }
+  .msg-time { font-size:9px; color:var(--muted); margin-top:4px; }
+  .chat-input-row { display:flex; gap:8px; margin-top:12px; }
+  .chat-input-row input { flex:1; }
+  .send-btn { background:var(--gold); color:var(--dark); border:none; font-family:'Josefin Sans',sans-serif; font-size:10px; letter-spacing:0.2em; padding:0 20px; cursor:pointer; transition:all 0.2s; min-height:44px; }
+  .send-btn:hover { background:var(--gold2); }
+  .empty-note { color:var(--muted); font-size:12px; font-style:italic; text-align:center; padding:20px 0; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);} }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">LewdCrom</div>
+  <div class="header-right">
+    <div class="handle"><span id="handleDisplay"></span></div>
+    <button class="logout-btn" onclick="logout()">Leave</button>
+  </div>
+</header>
+
+<main>
+  <div class="section-label">Commission Status</div>
+  <div class="status-badge s-pending" id="statusBadge">
+    <span class="sdot"></span>
+    <span id="statusText">Pending Review</span>
+  </div>
+
+  <div class="section-label">Commission Details</div>
+  <div class="card">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Character Name</label>
+        <input type="text" id="charName" placeholder="Your OC, character name...">
+      </div>
+      <div class="form-group">
+        <label>Detail Level</label>
+        <select id="detailLevel">
+          <option value="">— Select —</option>
+          <option value="sketch">Sketch (−$30)</option>
+          <option value="flat">Flat Color (−$20)</option>
+          <option value="rendered">Rendered (default)</option>
+          <option value="full_rendered">Full Rendered (+$50)</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Description</label>
+        <textarea id="description" rows="4" placeholder="Describe your character, pose, mood, scene, expression..."></textarea>
+      </div>
+      <div class="form-group full">
+        <label>Extra Notes</label>
+        <textarea id="notes" rows="2" placeholder="Anything else — dos & don'ts, specific details..."></textarea>
+      </div>
+    </div>
+    <button class="save-btn" id="saveBtn" onclick="save()">Save Commission</button>
+  </div>
+
+  <div class="section-label">References</div>
+  <div class="card">
+    <div class="refs-list" id="refsList">
+      <div class="empty-note">No references added yet.</div>
+    </div>
+    <div class="add-ref-row">
+      <select id="refType">
+        <option value="link">Link</option>
+        <option value="image">Image URL</option>
+        <option value="note">Note</option>
+      </select>
+      <input type="text" id="refContent" placeholder="Paste URL or write a note...">
+      <button class="add-ref-btn" onclick="addRef()">+ Add</button>
+    </div>
+  </div>
+
+  <div class="section-label">Messages</div>
+  <div class="card">
+    <div class="chat-box" id="chatBox">
+      <div class="empty-note">No messages yet. Feel free to ask anything!</div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="msgInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()">
+      <button class="send-btn" onclick="sendMsg()">Send</button>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SB_URL = 'https://hfwppgawpijskfmvvsvx.supabase.co';
+  const SB_KEY = 'sb_publishable_prcjFipRYOiUsVsPjib8dQ_LeSPG5El';
+  const sb = supabase.createClient(SB_URL, SB_KEY);
+
+  const handle = localStorage.getItem('lc_handle');
+  if (!handle || handle === 'admin') window.location.href = 'index.html';
+
+  document.getElementById('handleDisplay').textContent = '@' + handle;
+
+  let commission = null;
+  let msgChannel = null;
+
+  async function init() {
+    const { data } = await sb.from('commissions').select('*').eq('twitter_handle', handle).maybeSingle();
+    if (data) {
+      commission = data;
+      document.getElementById('charName').value = data.character_name || '';
+      document.getElementById('detailLevel').value = data.detail_level || '';
+      document.getElementById('description').value = data.description || '';
+      document.getElementById('notes').value = data.notes || '';
+      setStatus(data.status);
+      await loadRefs();
+      await loadMessages();
+      subscribeMessages();
+    }
+  }
+
+  function setStatus(s) {
+    const badge = document.getElementById('statusBadge');
+    const text = document.getElementById('statusText');
+    badge.className = 'status-badge s-' + (s || 'pending');
+    const labels = { pending:'Pending Review', in_progress:'In Progress', completed:'Completed ✦', cancelled:'Cancelled' };
+    text.textContent = labels[s] || 'Pending Review';
+  }
+
+  async function save() {
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true; btn.textContent = 'Saving...';
+    const payload = {
+      twitter_handle: handle,
+      character_name: document.getElementById('charName').value,
+      detail_level: document.getElementById('detailLevel').value,
+      description: document.getElementById('description').value,
+      notes: document.getElementById('notes').value,
+    };
+    if (commission) {
+      await sb.from('commissions').update(payload).eq('id', commission.id);
+    } else {
+      const { data } = await sb.from('commissions').insert({ ...payload, status:'pending' }).select().single();
+      commission = data;
+      subscribeMessages();
+    }
+    btn.textContent = '✦ Saved!';
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'Save Commission'; }, 2000);
+  }
+
+  async function loadRefs() {
+    if (!commission) return;
+    const { data } = await sb.from('commission_refs').select('*').eq('commission_id', commission.id).order('created_at');
+    renderRefs(data || []);
+  }
+
+  function renderRefs(refs) {
+    const list = document.getElementById('refsList');
+    if (!refs.length) { list.innerHTML = '<div class="empty-note">No references added yet.</div>'; return; }
+    list.innerHTML = refs.map(r => `
+      <div class="ref-item">
+        <span class="ref-type">${r.type}</span>
+        <span class="ref-content">${r.type !== 'note' ? `<a href="${r.content}" target="_blank" style="color:var(--gold);text-decoration:none;">${r.content}</a>` : r.content}</span>
+        <button class="ref-del" onclick="deleteRef('${r.id}')">×</button>
+      </div>`).join('');
+  }
+
+  async function addRef() {
+    if (!commission) { alert('Save your commission details first!'); return; }
+    const type = document.getElementById('refType').value;
+    const content = document.getElementById('refContent').value.trim();
+    if (!content) return;
+    await sb.from('commission_refs').insert({ commission_id: commission.id, type, content });
+    document.getElementById('refContent').value = '';
+    await loadRefs();
+  }
+
+  async function deleteRef(id) {
+    await sb.from('commission_refs').delete().eq('id', id);
+    await loadRefs();
+  }
+
+  async function loadMessages() {
+    if (!commission) return;
+    const { data } = await sb.from('messages').select('*').eq('commission_id', commission.id).order('created_at');
+    renderMessages(data || []);
+  }
+
+  function renderMessages(msgs) {
+    const box = document.getElementById('chatBox');
+    if (!msgs.length) { box.innerHTML = '<div class="empty-note">No messages yet. Feel free to ask anything!</div>'; return; }
+    box.innerHTML = msgs.map(m => {
+      const mine = m.sender === 'client';
+      const time = new Date(m.created_at).toLocaleString('en', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+      return `<div class="msg ${mine ? 'mine' : 'theirs'}">
+        <div class="msg-sender">${mine ? '@' + handle : 'LewdCrom'}</div>
+        <div class="msg-bubble">${m.content}</div>
+        <div class="msg-time">${time}</div>
+      </div>`;
+    }).join('');
+    box.scrollTop = box.scrollHeight;
+  }
+
+  async function sendMsg() {
+    if (!commission) { alert('Save your commission details first!'); return; }
+    const input = document.getElementById('msgInput');
+    const content = input.value.trim();
+    if (!content) return;
+    input.value = '';
+    await sb.from('messages').insert({ commission_id: commission.id, sender: 'client', content });
+  }
+
+  function subscribeMessages() {
+    if (!commission) return;
+    msgChannel = sb.channel('client-msgs-' + commission.id)
+      .on('postgres_changes', { event:'INSERT', schema:'public', table:'messages', filter:`commission_id=eq.${commission.id}` },
+        () => loadMessages()
+      ).subscribe();
+  }
+
+  function logout() { localStorage.removeItem('lc_handle'); window.location.href = 'index.html'; }
+
+  init();
+</script>
+</body>
+</html>
